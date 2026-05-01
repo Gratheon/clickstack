@@ -1,0 +1,82 @@
+name: gratheon-clickstack
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.1-alpine
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - ./docker/clickhouse/local/config.xml:/etc/clickhouse-server/config.xml:ro
+      - ./docker/clickhouse/local/users.xml:/etc/clickhouse-server/users.xml:ro
+      - ./docker/clickhouse/init:/docker-entrypoint-initdb.d:ro
+      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_logs:/var/log/clickhouse-server
+
+  mongo:
+    image: mongo:5.0.32-focal
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+
+  otel-collector:
+    image: docker.clickhouse.com/clickhouse/clickstack-otel-collector:2
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_ENDPOINT: tcp://clickhouse:9000?dial_timeout=10s
+      HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE: default
+      HYPERDX_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA: "true"
+      HYPERDX_LOG_LEVEL: info
+      OPAMP_SERVER_URL: http://hyperdx:4320
+    expose:
+      - "4317"
+      - "4318"
+      - "13133"
+    depends_on:
+      - clickhouse
+
+  hyperdx:
+    image: docker.hyperdx.io/hyperdx/hyperdx:2
+    restart: unless-stopped
+    environment:
+      HYPERDX_API_KEY: ${HYPERDX_API_KEY:?set HYPERDX_API_KEY}
+      HYPERDX_API_PORT: 8000
+      HYPERDX_APP_PORT: 8080
+      HYPERDX_APP_URL: ${HYPERDX_APP_URL:?set HYPERDX_APP_URL}
+      FRONTEND_URL: ${HYPERDX_APP_URL:?set HYPERDX_APP_URL}
+      SERVER_URL: http://127.0.0.1:8000
+      MONGO_URI: mongodb://mongo:27017/hyperdx
+      MINER_API_URL: http://miner:5123
+      OPAMP_PORT: 4320
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: gratheon-clickstack-ui
+      USAGE_STATS_ENABLED: ${USAGE_STATS_ENABLED:-false}
+      DEFAULT_CONNECTIONS: '[{"name":"Local ClickHouse","host":"http://clickhouse:8123","username":"default","password":""}]'
+    ports:
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      - clickhouse
+      - mongo
+
+  retention:
+    image: clickhouse/clickhouse-server:26.1-alpine
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_HOST: clickhouse
+      HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE: default
+      CLICKSTACK_LOG_RETENTION_DAYS: 30
+      CLICKSTACK_TRACE_RETENTION_DAYS: 14
+      CLICKSTACK_METRIC_RETENTION_DAYS: 90
+      CLICKSTACK_SESSION_RETENTION_DAYS: 30
+    volumes:
+      - ./docker/clickhouse/retention/apply-retention.sh:/apply-retention.sh:ro
+    entrypoint: ["/bin/sh", "/apply-retention.sh"]
+    depends_on:
+      - clickhouse
+
+volumes:
+  clickhouse_data:
+  clickhouse_logs:
+  mongo_data:
+
