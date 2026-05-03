@@ -1,0 +1,20 @@
+name: deploy
+
+on:
+  push:
+    branches: main
+    paths-ignore:
+      - 'README.md'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: pull
+        working-directory: /www/clickstack/
+        run: git reset --hard && git pull
+
+      - name: restart
+        working-directory: /www/clickstack/
+        run: chmod +x restart.sh && ./restart.sh
