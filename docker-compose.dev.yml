@@ -1,5 +1,3 @@
-name: gratheon-clickstack
-
 services:
   clickhouse:
     image: clickhouse/clickhouse-server:26.1-alpine
