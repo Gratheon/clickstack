@@ -11,5 +11,5 @@ compose() {
   fi
 }
 
-COMPOSE_PROJECT_NAME=gratheon-clickstack compose -f docker-compose.prod.yml pull
-COMPOSE_PROJECT_NAME=gratheon-clickstack compose -f docker-compose.prod.yml up -d
+COMPOSE_PROJECT_NAME=clickstack compose -f docker-compose.prod.yml pull
+COMPOSE_PROJECT_NAME=clickstack compose -f docker-compose.prod.yml up -d
