@@ -41,8 +41,8 @@ services:
     environment:
       HYPERDX_API_PORT: 8000
       HYPERDX_APP_PORT: 8080
-      HYPERDX_APP_URL: ${HYPERDX_APP_URL:?set HYPERDX_APP_URL}
-      FRONTEND_URL: ${HYPERDX_APP_URL:?set HYPERDX_APP_URL}
+      HYPERDX_APP_URL: ${HYPERDX_APP_URL:-https://clickstack.gratheon.com}
+      FRONTEND_URL: ${HYPERDX_APP_URL:-https://clickstack.gratheon.com}
       SERVER_URL: http://127.0.0.1:8000
       MONGO_URI: mongodb://mongo:27017/hyperdx
       MINER_API_URL: http://miner:5123

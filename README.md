@@ -37,10 +37,18 @@ After first registering in HyperDX, run `just set-dev-ingest-key` once to set th
 
 ```sh
 cd /Users/artjom/git/gratheon/clickstack
-HYPERDX_APP_URL=https://clickstack.gratheon.com just start-prod
+just start-prod
 ```
 
-Production compose uses named Docker volumes and keeps ClickHouse/Mongo internal. HyperDX binds to `127.0.0.1:8080` and `127.0.0.1:8000`, so put TLS/auth/routing in front with nginx/Caddy/Traefik.
+Production compose uses named Docker volumes and keeps ClickHouse/Mongo internal. HyperDX binds to `127.0.0.1:8080` and `127.0.0.1:8000`, so put routing in front with nginx/Caddy/Traefik.
+
+The nginx site config is in `config/nginx.conf`:
+
+```sh
+sudo ln -s /www/clickstack/config/nginx.conf /etc/nginx/sites-enabled/clickstack.conf
+sudo nginx -t
+sudo systemctl reload nginx
+```
 
 Production service env:
 
