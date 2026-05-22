@@ -23,6 +23,7 @@ receivers:
   docker_stats:
     endpoint: unix:///var/run/docker.sock
     collection_interval: 30s
+    api_version: "1.41"
 
 service:
   pipelines:
@@ -34,4 +35,3 @@ service:
       receivers: [docker_stats]
       processors: [memory_limiter, batch]
       exporters: [clickhouse]
-

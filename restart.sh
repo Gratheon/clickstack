@@ -12,4 +12,5 @@ compose() {
 }
 
 COMPOSE_PROJECT_NAME=clickstack compose -f docker-compose.prod.yml pull
-COMPOSE_PROJECT_NAME=clickstack compose -f docker-compose.prod.yml up -d
+COMPOSE_PROJECT_NAME=clickstack compose -f docker-compose.prod.yml up -d --scale dashboard-seed=0
+COMPOSE_PROJECT_NAME=clickstack compose -f docker-compose.prod.yml run --rm dashboard-seed

@@ -19,6 +19,7 @@ services:
 
   otel-collector:
     image: docker.clickhouse.com/clickhouse/clickstack-otel-collector:2
+    user: "0:0"
     restart: unless-stopped
     environment:
       CLICKHOUSE_ENDPOINT: tcp://clickhouse:9000?dial_timeout=10s
@@ -26,10 +27,20 @@ services:
       HYPERDX_OTEL_EXPORTER_CREATE_LEGACY_SCHEMA: "true"
       HYPERDX_LOG_LEVEL: info
       OPAMP_SERVER_URL: http://hyperdx:4320
+      CUSTOM_OTELCOL_CONFIG_FILE: /etc/otelcol-contrib/custom.config.yaml
+      DOCKER_API_VERSION: "1.41"
     expose:
       - "4317"
       - "4318"
       - "13133"
+    ports:
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+      - "127.0.0.1:13133:13133"
+    volumes:
+      - ./docker/otel-collector/custom.config.yaml:/etc/otelcol-contrib/custom.config.yaml:ro
+      - /:/hostfs:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       - clickhouse
 
@@ -69,6 +80,16 @@ services:
     entrypoint: ["/bin/sh", "/apply-retention.sh"]
     depends_on:
       - clickhouse
+
+  dashboard-seed:
+    image: mongo:5.0.32-focal
+    restart: "no"
+    volumes:
+      - ./docker/mongo/seed-node-resources-dashboard.js:/seed-node-resources-dashboard.js:ro
+    entrypoint: ["mongosh", "mongodb://mongo:27017/hyperdx", "--quiet", "/seed-node-resources-dashboard.js"]
+    depends_on:
+      - mongo
+      - hyperdx
 
 volumes:
   clickhouse_data:

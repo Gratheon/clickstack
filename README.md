@@ -20,6 +20,7 @@ Local URLs:
 - Collector metrics: http://localhost:8888/metrics
 - ClickHouse HTTP: http://localhost:8123
 - ClickHouse native: `localhost:9001`
+- Node resources dashboard: http://localhost:8081/dashboards/list
 
 Point local services at ClickStack:
 
@@ -41,6 +42,8 @@ just start-prod
 ```
 
 Production compose uses named Docker volumes and keeps ClickHouse/Mongo internal. HyperDX binds to `127.0.0.1:8080` and `127.0.0.1:8000`, so put routing in front with nginx/Caddy/Traefik.
+
+Production also collects node and Docker metrics from the host via the OpenTelemetry Collector. The collector mounts `/` at `/hostfs` for hostmetrics and `/var/run/docker.sock` for Docker container metrics, then `dashboard-seed` creates or updates the `Node resources` dashboard in HyperDX metadata.
 
 The nginx site config is in `config/nginx.conf`:
 
@@ -64,4 +67,4 @@ HYPERDX_API_KEY=<secret>
 - Do not expose MongoDB.
 - Do not expose ClickHouse publicly.
 - Treat `HYPERDX_API_KEY` as the ingest secret.
-- Dev collects host and Docker metrics via `/` and `/var/run/docker.sock`; production compose avoids those broad mounts by default.
+- Dev and production collect host and Docker metrics via `/` and `/var/run/docker.sock`.
