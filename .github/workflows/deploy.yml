@@ -14,11 +14,10 @@ jobs:
       - name: pull
         working-directory: /www/clickstack/
         run: |
-          git remote set-url origin https://github.com/Gratheon/clickstack.git
-          git fetch origin main
+          git fetch https://github.com/Gratheon/clickstack.git main
           git reset --hard
           git clean -fd
-          git reset --hard origin/main
+          git reset --hard FETCH_HEAD
 
       - name: restart
         working-directory: /www/clickstack/
