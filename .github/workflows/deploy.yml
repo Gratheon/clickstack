@@ -14,9 +14,10 @@ jobs:
       - name: pull
         working-directory: /www/clickstack/
         run: |
+          git fetch origin main
           git reset --hard
           git clean -fd
-          git pull --ff-only
+          git reset --hard origin/main
 
       - name: restart
         working-directory: /www/clickstack/
