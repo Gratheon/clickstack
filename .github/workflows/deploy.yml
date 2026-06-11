@@ -13,7 +13,10 @@ jobs:
     steps:
       - name: pull
         working-directory: /www/clickstack/
-        run: git reset --hard && git pull
+        run: |
+          git reset --hard
+          git clean -fd
+          git pull --ff-only
 
       - name: restart
         working-directory: /www/clickstack/

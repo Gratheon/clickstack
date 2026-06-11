@@ -45,6 +45,8 @@ Production compose uses named Docker volumes and keeps ClickHouse/Mongo internal
 
 Production also collects node and Docker metrics from the host via the OpenTelemetry Collector. The collector mounts `/` at `/hostfs` for hostmetrics and `/var/run/docker.sock` for Docker container metrics, then `dashboard-seed` creates or updates the `Node resources` dashboard in HyperDX metadata.
 
+Production retention is intentionally small: app telemetry is kept for 7 days, ClickHouse internal diagnostic logs are kept for 1 day, and the retention worker enforces a 1 GiB ClickHouse data cap by pruning diagnostic logs and then oldest telemetry partitions if needed.
+
 The nginx site config is in `config/nginx.conf`:
 
 ```sh

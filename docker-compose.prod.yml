@@ -71,10 +71,12 @@ services:
     environment:
       CLICKHOUSE_HOST: clickhouse
       HYPERDX_OTEL_EXPORTER_CLICKHOUSE_DATABASE: default
-      CLICKSTACK_LOG_RETENTION_DAYS: 30
-      CLICKSTACK_TRACE_RETENTION_DAYS: 14
-      CLICKSTACK_METRIC_RETENTION_DAYS: 90
-      CLICKSTACK_SESSION_RETENTION_DAYS: 30
+      CLICKSTACK_LOG_RETENTION_DAYS: 7
+      CLICKSTACK_TRACE_RETENTION_DAYS: 7
+      CLICKSTACK_METRIC_RETENTION_DAYS: 7
+      CLICKSTACK_SESSION_RETENTION_DAYS: 7
+      CLICKSTACK_SYSTEM_LOG_RETENTION_DAYS: 1
+      CLICKSTACK_MAX_BYTES: 1073741824
     volumes:
       - ./docker/clickhouse/retention/apply-retention.sh:/apply-retention.sh:ro
     entrypoint: ["/bin/sh", "/apply-retention.sh"]
