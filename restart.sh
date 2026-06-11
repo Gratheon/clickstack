@@ -11,6 +11,9 @@ compose() {
   fi
 }
 
-COMPOSE_PROJECT_NAME=clickstack compose -f docker-compose.prod.yml pull
+if [ "${CLICKSTACK_PULL_IMAGES:-false}" = "true" ]; then
+  COMPOSE_PROJECT_NAME=clickstack compose -f docker-compose.prod.yml pull
+fi
+
 COMPOSE_PROJECT_NAME=clickstack compose -f docker-compose.prod.yml up -d --scale dashboard-seed=0
 COMPOSE_PROJECT_NAME=clickstack compose -f docker-compose.prod.yml run --rm dashboard-seed
