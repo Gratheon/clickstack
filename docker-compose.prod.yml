@@ -29,6 +29,14 @@ services:
       OPAMP_SERVER_URL: http://hyperdx:4320
       CUSTOM_OTELCOL_CONFIG_FILE: /etc/otelcol-contrib/custom.config.yaml
       DOCKER_API_VERSION: "1.41"
+      # Stream the supervisor-managed agent log through Docker instead of
+      # retaining an unbounded /etc/otel/supervisor-data/agent.log file.
+      OTEL_SUPERVISOR_LOGS: "true"
+    logging:
+      driver: local
+      options:
+        max-size: "100m"
+        max-file: "5"
     expose:
       - "4317"
       - "4318"
