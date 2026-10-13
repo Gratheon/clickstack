@@ -12,7 +12,7 @@ services:
       - clickhouse_logs:/var/log/clickhouse-server
 
   mongo:
-    image: mongo:5.0.32-focal
+    image: mongo:6.0.28
     restart: unless-stopped
     volumes:
       - mongo_data:/data/db
@@ -92,7 +92,7 @@ services:
       - clickhouse
 
   dashboard-seed:
-    image: mongo:5.0.32-focal
+    image: mongo:6.0.28
     restart: "no"
     volumes:
       - ./docker/mongo/seed-node-resources-dashboard.js:/seed-node-resources-dashboard.js:ro

@@ -16,7 +16,7 @@ services:
       - ./.volumes/clickhouse/logs:/var/log/clickhouse-server
 
   mongo:
-    image: mongo:5.0.32-focal
+    image: mongo:6.0.28
     restart: unless-stopped
     volumes:
       - ./.volumes/mongo:/data/db
